@@ -65,6 +65,8 @@ return [
 
     // Field Helpers
     'helpers' => [
+        'email' => 'Opsional. Jika kosong, akan dibuat otomatis dari nama dengan akhiran @mypamulihan.com',
+        'password' => 'Opsional. Jika kosong, akan dibuat kata sandi acak yang aman',
         'phone' => 'Format: 628xxxxxxxxxx atau 08xxxxxxxxxx',
         'national_id_number' => 'NIK terdiri dari 16 digit angka sesuai KTP',
         'rt' => 'Nomor RT (Rukun Tetangga)',

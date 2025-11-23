@@ -59,9 +59,9 @@ class UserResource extends Resource
                                 Forms\Components\TextInput::make('email')
                                     ->label(__('user.fields.email'))
                                     ->email()
-                                    ->required()
                                     ->unique(ignoreRecord: true)
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->helperText(__('user.helpers.email')),
                                 Forms\Components\TextInput::make('phone')
                                     ->label(__('user.fields.phone'))
                                     ->tel()
@@ -70,10 +70,10 @@ class UserResource extends Resource
                                 Forms\Components\TextInput::make('password')
                                     ->label(__('user.fields.password'))
                                     ->password()
-                                    ->required(fn (string $context): bool => $context === 'create')
                                     ->dehydrated(fn ($state) => filled($state))
                                     ->maxLength(255)
-                                    ->revealable(),
+                                    ->revealable()
+                                    ->helperText(__('user.helpers.password')),
                             ]),
                     ]),
 

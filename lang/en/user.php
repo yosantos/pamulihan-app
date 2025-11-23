@@ -65,6 +65,8 @@ return [
 
     // Field Helpers
     'helpers' => [
+        'email' => 'Optional. If empty, will auto-generate from name with @mypamulihan.com suffix',
+        'password' => 'Optional. If empty, will auto-generate a random secure password',
         'phone' => 'Format: 628xxxxxxxxxx or 08xxxxxxxxxx',
         'national_id_number' => 'Indonesian National ID Number consists of 16 digits',
         'rt' => 'RT (Rukun Tetangga) number',
