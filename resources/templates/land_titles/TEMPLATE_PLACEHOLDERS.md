@@ -179,9 +179,19 @@ For dynamic witness count (use row cloning with #1, #2, etc.):
 - `${witness_road#1}`, `${witness_rt#1}`, `${witness_rw#1}`, etc.
 - `${witness_village#1}`, `${witness_district#1}`, `${witness_city#1}`, `${witness_province#1}`, etc.
 
-## Using Row Cloning in Templates
+## Using Placeholders in Templates
 
-For multiple sellers or witnesses, you can use PHPWord's row cloning feature:
+### Placeholder Repetition
+**Important:** You can use the same placeholder multiple times in your document. For example:
+- Use `${seller_name}` in the main content section
+- Use `${seller_name}` again in the signature section
+- Both will be replaced with the same value
+
+This is useful for signature forms where you need to repeat party names.
+
+### Row Cloning for Multiple Records
+
+For multiple sellers, buyers, or witnesses, you can use PHPWord's row cloning feature:
 
 1. Create a table row with the placeholder `${seller_name}` (without #1 suffix)
 2. The service will automatically clone this row for each seller
