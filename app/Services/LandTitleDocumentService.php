@@ -92,23 +92,58 @@ class LandTitleDocumentService
     {
         $code = $landTitle->landTitleType->code ?? 'sale_purchase';
 
-        // Count applicants by type
-        $sellersCount = $landTitle->applicantsByType('Seller')->count();
-        $buyersCount = $landTitle->applicantsByType('Buyer')->count();
+        // 1. Detect land source (letter_c vs certificate)
+        $landSource = $landTitle->letter_c_land_title_id ? 'letter_c' : 'certificate';
 
-        // Determine template configuration
-        $sellerConfig = $sellersCount > 1 ? 'multiple_sellers' : 'single_seller';
-        $buyerConfig = $buyersCount > 1 ? 'multiple_buyers' : 'single_buyer';
+        // 2. Detect seller type and count
+        $isHeir = $landTitle->is_heir ?? false;
+        $hasConsent = $this->hasConsentApplicant($landTitle);
 
-        $templateName = "{$code}_{$sellerConfig}_{$buyerConfig}.docx";
-        $templatePath = storage_path("app/templates/land_titles/{$code}/{$templateName}");
+        // Count sellers and buyers using applicant type code
+        $sellersCount = $landTitle->landTitleApplicants()
+            ->whereHas('applicantType', function ($query) {
+                $query->where('code', 'seller');
+            })
+            ->count();
 
-        // Fallback to default template if specific configuration not found
-        if (!file_exists($templatePath)) {
-            $templatePath = storage_path("app/templates/land_titles/{$code}/sale_purchase_multiple_sellers_single_buyer.docx");
+        $buyersCount = $landTitle->landTitleApplicants()
+            ->whereHas('applicantType', function ($query) {
+                $query->where('code', 'buyer');
+            })
+            ->count();
+
+        // 3. Determine seller type prefix
+        if ($isHeir) {
+            $sellerConfig = 'heir_sellers';
+        } elseif ($hasConsent) {
+            $sellerConfig = 'single_seller_with_consent';
+        } else {
+            $sellerConfig = $sellersCount > 1 ? 'multiple_sellers' : 'single_seller';
         }
 
+        // 4. Determine buyer suffix
+        $buyerConfig = $buyersCount > 1 ? 'multiple_buyers' : 'single_buyer';
+
+        // 5. Build template path
+        $templateName = "{$sellerConfig}_{$buyerConfig}.docx";
+        $templatePath = storage_path("app/templates/land_titles/{$code}/{$landSource}/{$templateName}");
+
         return $templatePath;
+    }
+
+    /**
+     * Check if land title has consent applicant
+     *
+     * @param LandTitle $landTitle
+     * @return bool
+     */
+    private function hasConsentApplicant(LandTitle $landTitle): bool
+    {
+        return $landTitle->landTitleApplicants()
+            ->whereHas('applicantType', function ($query) {
+                $query->where('code', 'consent');
+            })
+            ->exists();
     }
 
     /**
@@ -123,6 +158,7 @@ class LandTitleDocumentService
         $this->fillPPATInfo($template, $landTitle);
         $this->fillDocumentInfo($template, $landTitle);
         $this->fillSellers($template, $landTitle);
+        $this->fillConsent($template, $landTitle);
         $this->fillBuyer($template, $landTitle);
         $this->fillLandInfo($template, $landTitle);
         $this->fillTransactionInfo($template, $landTitle);
@@ -172,7 +208,11 @@ class LandTitleDocumentService
      */
     private function fillSellers($template, $landTitle): void
     {
-        $sellers = $landTitle->applicantsByType('Seller')->get();
+        $sellers = $landTitle->landTitleApplicants()
+            ->whereHas('applicantType', function ($query) {
+                $query->where('code', 'seller');
+            })
+            ->get();
 
         if ($sellers->isEmpty()) {
             $template->setValue('seller_name', '-');
@@ -221,7 +261,46 @@ class LandTitleDocumentService
     }
 
     /**
-     * Fill buyer information
+     * Fill consent applicant information
+     *
+     * @param TemplateProcessor $template
+     * @param LandTitle $landTitle
+     * @return void
+     */
+    private function fillConsent($template, $landTitle): void
+    {
+        $consent = $landTitle->landTitleApplicants()
+            ->whereHas('applicantType', function ($query) {
+                $query->where('code', 'consent');
+            })
+            ->first();
+
+        if (!$consent) {
+            $template->setValue('consent_name', '-');
+            $template->setValue('consent_birthplace', '-');
+            $template->setValue('consent_birthdate', '-');
+            $template->setValue('consent_age', '-');
+            $template->setValue('consent_occupation', '-');
+            $template->setValue('consent_national_id_number', '-');
+            $template->setValue('consent_address', '-');
+            return;
+        }
+
+        $user = $consent->user;
+
+        $template->setValue('consent_name', $user->name ?? '-');
+        $template->setValue('consent_birthplace', $user->birthplace ?? '-');
+        $template->setValue('consent_birthdate',
+            $user->birthdate ? $this->formatIndonesianDate($user->birthdate) : '-');
+        $template->setValue('consent_age',
+            $user->birthdate ? $this->calculateAge($user->birthdate) : '-');
+        $template->setValue('consent_occupation', $user->occupation ?? '-');
+        $template->setValue('consent_national_id_number', $user->national_id_number ?? '-');
+        $template->setValue('consent_address', $this->formatAddress($user) ?? '-');
+    }
+
+    /**
+     * Fill buyer information (handle multiple buyers)
      *
      * @param TemplateProcessor $template
      * @param LandTitle $landTitle
@@ -229,9 +308,13 @@ class LandTitleDocumentService
      */
     private function fillBuyer($template, $landTitle): void
     {
-        $buyer = $landTitle->applicantsByType('Buyer')->first();
+        $buyers = $landTitle->landTitleApplicants()
+            ->whereHas('applicantType', function ($query) {
+                $query->where('code', 'buyer');
+            })
+            ->get();
 
-        if (!$buyer) {
+        if ($buyers->isEmpty()) {
             $template->setValue('buyer_name', '-');
             $template->setValue('buyer_birthplace', '-');
             $template->setValue('buyer_birthdate', '-');
@@ -242,17 +325,39 @@ class LandTitleDocumentService
             return;
         }
 
-        $user = $buyer->user;
+        // Check if template has buyer count variable for cloning
+        try {
+            $template->cloneRow('buyer_name', $buyers->count());
 
-        $template->setValue('buyer_name', $user->name ?? '-');
-        $template->setValue('buyer_birthplace', $user->birthplace ?? '-');
-        $template->setValue('buyer_birthdate',
-            $user->birthdate ? $this->formatIndonesianDate($user->birthdate) : '-');
-        $template->setValue('buyer_age',
-            $user->birthdate ? $this->calculateAge($user->birthdate) : '-');
-        $template->setValue('buyer_occupation', $user->occupation ?? '-');
-        $template->setValue('buyer_national_id_number', $user->national_id_number ?? '-');
-        $template->setValue('buyer_address', $this->formatAddress($user) ?? '-');
+            foreach ($buyers as $index => $buyer) {
+                $rowIndex = $index + 1;
+                $user = $buyer->user;
+
+                $template->setValue("buyer_name#{$rowIndex}", $user->name ?? '-');
+                $template->setValue("buyer_birthplace#{$rowIndex}", $user->birthplace ?? '-');
+                $template->setValue("buyer_birthdate#{$rowIndex}",
+                    $user->birthdate ? $this->formatIndonesianDate($user->birthdate) : '-');
+                $template->setValue("buyer_age#{$rowIndex}",
+                    $user->birthdate ? $this->calculateAge($user->birthdate) : '-');
+                $template->setValue("buyer_occupation#{$rowIndex}", $user->occupation ?? '-');
+                $template->setValue("buyer_national_id_number#{$rowIndex}", $user->national_id_number ?? '-');
+                $template->setValue("buyer_address#{$rowIndex}", $this->formatAddress($user) ?? '-');
+            }
+        } catch (\Exception $e) {
+            // If cloning fails, just fill single buyer
+            $firstBuyer = $buyers->first();
+            $user = $firstBuyer->user;
+
+            $template->setValue('buyer_name', $user->name ?? '-');
+            $template->setValue('buyer_birthplace', $user->birthplace ?? '-');
+            $template->setValue('buyer_birthdate',
+                $user->birthdate ? $this->formatIndonesianDate($user->birthdate) : '-');
+            $template->setValue('buyer_age',
+                $user->birthdate ? $this->calculateAge($user->birthdate) : '-');
+            $template->setValue('buyer_occupation', $user->occupation ?? '-');
+            $template->setValue('buyer_national_id_number', $user->national_id_number ?? '-');
+            $template->setValue('buyer_address', $this->formatAddress($user) ?? '-');
+        }
     }
 
     /**
@@ -356,7 +461,11 @@ class LandTitleDocumentService
      */
     private function fillWitnesses($template, $landTitle): void
     {
-        $witnesses = $landTitle->applicantsByType('Witness')->get();
+        $witnesses = $landTitle->landTitleApplicants()
+            ->whereHas('applicantType', function ($query) {
+                $query->where('code', 'witness');
+            })
+            ->get();
 
         if ($witnesses->isEmpty()) {
             // Fill default witness placeholders
