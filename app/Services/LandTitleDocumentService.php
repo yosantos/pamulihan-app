@@ -177,9 +177,8 @@ class LandTitleDocumentService
         $creator = $landTitle->creator;
 
         $template->setValue('ppat_name', $creator->name ?? '-');
-        $template->setValue('ppat_address', $this->formatAddress($creator) ?? '-');
 
-        // Individual PPAT address components
+        // Individual PPAT address components only
         if ($creator) {
             $template->setValue('ppat_road', $creator->road ?? '-');
             $template->setValue('ppat_rt', $creator->rt ?? '-');
@@ -625,10 +624,7 @@ class LandTitleDocumentService
         $template->setValue("{$prefix}_occupation{$suffix}", $user->occupation ?? '-');
         $template->setValue("{$prefix}_national_id_number{$suffix}", $user->national_id_number ?? '-');
 
-        // Full address
-        $template->setValue("{$prefix}_address{$suffix}", $this->formatAddress($user));
-
-        // Individual address components
+        // Individual address components only
         $template->setValue("{$prefix}_road{$suffix}", $user->road ?? '-');
         $template->setValue("{$prefix}_rt{$suffix}", $user->rt ?? '-');
         $template->setValue("{$prefix}_rw{$suffix}", $user->rw ?? '-');
@@ -654,7 +650,6 @@ class LandTitleDocumentService
         $template->setValue("{$prefix}_age{$suffix}", '-');
         $template->setValue("{$prefix}_occupation{$suffix}", '-');
         $template->setValue("{$prefix}_national_id_number{$suffix}", '-');
-        $template->setValue("{$prefix}_address{$suffix}", '-');
         $template->setValue("{$prefix}_road{$suffix}", '-');
         $template->setValue("{$prefix}_rt{$suffix}", '-');
         $template->setValue("{$prefix}_rw{$suffix}", '-');
