@@ -12,6 +12,7 @@ return [
 
     'fields' => [
         'name' => 'Nama',
+        'village' => 'Desa',
         'number_of_c' => 'Nomor C',
         'number_of_persil' => 'Nomor Persil',
         'class' => 'Kelas',
@@ -23,6 +24,7 @@ return [
 
     'placeholders' => [
         'name' => 'Masukkan nama pemilik',
+        'village' => 'Pilih desa',
         'number_of_c' => 'Masukkan nomor C',
         'number_of_persil' => 'Masukkan nomor persil',
         'class' => 'Masukkan kelas',

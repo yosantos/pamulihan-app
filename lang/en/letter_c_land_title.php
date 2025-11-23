@@ -12,6 +12,7 @@ return [
 
     'fields' => [
         'name' => 'Name',
+        'village' => 'Village',
         'number_of_c' => 'C Number',
         'number_of_persil' => 'Persil Number',
         'class' => 'Class',
@@ -23,6 +24,7 @@ return [
 
     'placeholders' => [
         'name' => 'Enter owner name',
+        'village' => 'Select village',
         'number_of_c' => 'Enter C number',
         'number_of_persil' => 'Enter persil number',
         'class' => 'Enter class',
