@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\LetterCLandTitleResource\Pages;
 use App\Models\LetterCLandTitle;
+use App\Models\Village;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -48,6 +49,19 @@ class LetterCLandTitleResource extends Resource
                             ->placeholder(__('letter_c_land_title.placeholders.name'))
                             ->helperText(__('letter_c_land_title.helpers.name'))
                             ->columnSpanFull(),
+                        Forms\Components\Select::make('village_id')
+                            ->label(__('letter_c_land_title.fields.village'))
+                            ->relationship('village', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->label(__('village.fields.name'))
+                                    ->required()
+                                    ->maxLength(255),
+                            ])
+                            ->placeholder(__('letter_c_land_title.placeholders.village'))
+                            ->columnSpanFull(),
                         Forms\Components\TextInput::make('number_of_c')
                             ->label(__('letter_c_land_title.fields.number_of_c'))
                             ->required()
@@ -91,6 +105,11 @@ class LetterCLandTitleResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->limit(40),
+                Tables\Columns\TextColumn::make('village.name')
+                    ->label(__('letter_c_land_title.fields.village'))
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('number_of_c')
                     ->label(__('letter_c_land_title.fields.number_of_c'))
                     ->searchable()
