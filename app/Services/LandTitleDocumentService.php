@@ -126,7 +126,7 @@ class LandTitleDocumentService
 
         // 5. Build template path
         $templateName = "{$sellerConfig}_{$buyerConfig}.docx";
-        $templatePath = storage_path("app/templates/land_titles/{$code}/{$landSource}/{$templateName}");
+        $templatePath = resource_path("templates/land_titles/{$code}/{$landSource}/{$templateName}");
 
         return $templatePath;
     }
