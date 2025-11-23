@@ -53,31 +53,49 @@ Example: `grant_multiple_sellers_single_buyer.docx`
 - `${document_year}` - Year (e.g., "2025")
 - `${document_year_words}` - Year in Indonesian words
 
+### Heir Details (for Inheritance Cases)
+- `${heir_from_name}` - Name of the deceased person (who the property is inherited from)
+- `${death_place}` - Place where the deceased person died
+- `${death_date}` - Date of death in Indonesian format
+- `${death_certificate_number}` - Death certificate number
+- `${death_certificate_issuer}` - Issuer of the death certificate
+- `${death_certificate_date}` - Date of death certificate issuance in Indonesian format
+
+**Note:** These placeholders are only filled when `is_heir` is true. Otherwise, they will be filled with "-".
+
 ### Seller Information
 
-For single seller templates:
-- `${seller_name}` - Seller's full name
-- `${seller_birthplace}` - Seller's birthplace
-- `${seller_birthdate}` - Seller's birthdate in Indonesian format
-- `${seller_age}` - Seller's age (calculated: current year - birth year) with "tahun"
-- `${seller_occupation}` - Seller's occupation
-- `${seller_national_id_number}` - Seller's National ID (KTP)
+**Basic seller placeholders (works for both single and multiple sellers):**
+- `${seller_name}` - First seller's full name
+- `${seller_birthplace}` - First seller's birthplace
+- `${seller_birthdate}` - First seller's birthdate in Indonesian format
+- `${seller_age}` - First seller's age (calculated: current year - birth year) with "tahun"
+- `${seller_occupation}` - First seller's occupation
+- `${seller_national_id_number}` - First seller's National ID (KTP)
 
-**Seller Address (separate components):**
-- `${seller_road}` - Road/Street name
-- `${seller_rt}` - RT number
-- `${seller_rw}` - RW number
-- `${seller_village}` - Village (Kelurahan/Desa)
-- `${seller_district}` - District (Kecamatan)
-- `${seller_city}` - City (Kota/Kabupaten)
-- `${seller_province}` - Province (Provinsi)
+**Seller Address Components:**
+- `${seller_road}` - First seller's road/street name
+- `${seller_rt}` - First seller's RT number
+- `${seller_rw}` - First seller's RW number
+- `${seller_village}` - First seller's village (Kelurahan/Desa)
+- `${seller_district}` - First seller's district (Kecamatan)
+- `${seller_city}` - First seller's city (Kota/Kabupaten)
+- `${seller_province}` - First seller's province (Provinsi)
 
-For multiple sellers templates (use row cloning with #1, #2, etc.):
+**For multiple sellers, use one of these formats:**
+
+**Option 1: Row cloning (for tables):**
 - `${seller_name#1}`, `${seller_name#2}`, etc.
 - `${seller_birthplace#1}`, `${seller_birthdate#1}`, `${seller_age#1}`, etc.
-- `${seller_occupation#1}`, `${seller_national_id_number#1}`, etc.
 - `${seller_road#1}`, `${seller_rt#1}`, `${seller_rw#1}`, etc.
-- `${seller_village#1}`, `${seller_district#1}`, `${seller_city#1}`, `${seller_province#1}`, etc.
+
+**Option 2: Numbered placeholders (for non-table layouts):**
+- `${seller_1_name}`, `${seller_2_name}`, `${seller_3_name}`, etc.
+- `${seller_1_birthplace}`, `${seller_1_birthdate}`, `${seller_1_age}`, etc.
+- `${seller_1_road}`, `${seller_1_rt}`, `${seller_1_rw}`, etc.
+- `${seller_1_village}`, `${seller_1_district}`, `${seller_1_city}`, `${seller_1_province}`, etc.
+
+**Note:** Both `${seller_name}` and `${seller_1_name}` will show the same (first) seller for backward compatibility.
 
 ### Consent Person Information (for templates with consent)
 - `${consent_name}` - Consent person's full name
@@ -98,29 +116,37 @@ For multiple sellers templates (use row cloning with #1, #2, etc.):
 
 ### Buyer Information
 
-For single buyer templates:
-- `${buyer_name}` - Buyer's full name
-- `${buyer_birthplace}` - Buyer's birthplace
-- `${buyer_birthdate}` - Buyer's birthdate in Indonesian format
-- `${buyer_age}` - Buyer's age (calculated: current year - birth year) with "tahun"
-- `${buyer_occupation}` - Buyer's occupation
-- `${buyer_national_id_number}` - Buyer's National ID (KTP)
+**Basic buyer placeholders (works for both single and multiple buyers):**
+- `${buyer_name}` - First buyer's full name
+- `${buyer_birthplace}` - First buyer's birthplace
+- `${buyer_birthdate}` - First buyer's birthdate in Indonesian format
+- `${buyer_age}` - First buyer's age (calculated: current year - birth year) with "tahun"
+- `${buyer_occupation}` - First buyer's occupation
+- `${buyer_national_id_number}` - First buyer's National ID (KTP)
 
-**Buyer Address (separate components):**
-- `${buyer_road}` - Road/Street name
-- `${buyer_rt}` - RT number
-- `${buyer_rw}` - RW number
-- `${buyer_village}` - Village (Kelurahan/Desa)
-- `${buyer_district}` - District (Kecamatan)
-- `${buyer_city}` - City (Kota/Kabupaten)
-- `${buyer_province}` - Province (Provinsi)
+**Buyer Address Components:**
+- `${buyer_road}` - First buyer's road/street name
+- `${buyer_rt}` - First buyer's RT number
+- `${buyer_rw}` - First buyer's RW number
+- `${buyer_village}` - First buyer's village (Kelurahan/Desa)
+- `${buyer_district}` - First buyer's district (Kecamatan)
+- `${buyer_city}` - First buyer's city (Kota/Kabupaten)
+- `${buyer_province}` - First buyer's province (Provinsi)
 
-For multiple buyers templates (use row cloning with #1, #2, etc.):
+**For multiple buyers, use one of these formats:**
+
+**Option 1: Row cloning (for tables):**
 - `${buyer_name#1}`, `${buyer_name#2}`, etc.
 - `${buyer_birthplace#1}`, `${buyer_birthdate#1}`, `${buyer_age#1}`, etc.
-- `${buyer_occupation#1}`, `${buyer_national_id_number#1}`, etc.
 - `${buyer_road#1}`, `${buyer_rt#1}`, `${buyer_rw#1}`, etc.
-- `${buyer_village#1}`, `${buyer_district#1}`, `${buyer_city#1}`, `${buyer_province#1}`, etc.
+
+**Option 2: Numbered placeholders (for non-table layouts):**
+- `${buyer_1_name}`, `${buyer_2_name}`, `${buyer_3_name}`, etc.
+- `${buyer_1_birthplace}`, `${buyer_1_birthdate}`, `${buyer_1_age}`, etc.
+- `${buyer_1_road}`, `${buyer_1_rt}`, `${buyer_1_rw}`, etc.
+- `${buyer_1_village}`, `${buyer_1_district}`, `${buyer_1_city}`, `${buyer_1_province}`, etc.
+
+**Note:** Both `${buyer_name}` and `${buyer_1_name}` will show the same (first) buyer for backward compatibility.
 
 ### Land Information (SPPT)
 - `${sppt_number}` - SPPT number

@@ -12,14 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('land_titles', function (Blueprint $table) {
-            if (!Schema::hasColumn('land_titles', 'is_heir')) {
-                $table->boolean('is_heir')
-                    ->default(false)
-                    ->after('land_title_type_id')
-                    ->comment('Indicates if this land title is for an heir');
-
-                $table->index('is_heir');
-            }
+            $table->date('death_certificate_date')->nullable()->after('death_certificate_issuer');
         });
     }
 
@@ -29,10 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('land_titles', function (Blueprint $table) {
-            if (Schema::hasColumn('land_titles', 'is_heir')) {
-                $table->dropIndex(['is_heir']);
-                $table->dropColumn('is_heir');
-            }
+            $table->dropColumn('death_certificate_date');
         });
     }
 };

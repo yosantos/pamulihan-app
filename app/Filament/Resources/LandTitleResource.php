@@ -69,7 +69,40 @@ class LandTitleResource extends Resource
                             ->label(__('land_title.fields.is_heir'))
                             ->default(false)
                             ->helperText(__('land_title.helpers.is_heir'))
-                            ->inline(false),
+                            ->inline(false)
+                            ->reactive(),
+                        Forms\Components\TextInput::make('heir_from_name')
+                            ->label(__('land_title.fields.heir_from_name'))
+                            ->maxLength(255)
+                            ->placeholder(__('land_title.placeholders.heir_from_name'))
+                            ->visible(fn ($get) => $get('is_heir') === true),
+                        Forms\Components\TextInput::make('death_place')
+                            ->label(__('land_title.fields.death_place'))
+                            ->maxLength(255)
+                            ->placeholder(__('land_title.placeholders.death_place'))
+                            ->visible(fn ($get) => $get('is_heir') === true),
+                        Forms\Components\DatePicker::make('death_date')
+                            ->label(__('land_title.fields.death_date'))
+                            ->native(false)
+                            ->maxDate(now())
+                            ->placeholder(__('land_title.placeholders.death_date'))
+                            ->visible(fn ($get) => $get('is_heir') === true),
+                        Forms\Components\TextInput::make('death_certificate_number')
+                            ->label(__('land_title.fields.death_certificate_number'))
+                            ->maxLength(255)
+                            ->placeholder(__('land_title.placeholders.death_certificate_number'))
+                            ->visible(fn ($get) => $get('is_heir') === true),
+                        Forms\Components\TextInput::make('death_certificate_issuer')
+                            ->label(__('land_title.fields.death_certificate_issuer'))
+                            ->maxLength(255)
+                            ->placeholder(__('land_title.placeholders.death_certificate_issuer'))
+                            ->visible(fn ($get) => $get('is_heir') === true),
+                        Forms\Components\DatePicker::make('death_certificate_date')
+                            ->label(__('land_title.fields.death_certificate_date'))
+                            ->native(false)
+                            ->maxDate(now())
+                            ->placeholder(__('land_title.placeholders.death_certificate_date'))
+                            ->visible(fn ($get) => $get('is_heir') === true),
                         Forms\Components\Select::make('sppt_land_title_id')
                             ->label(__('land_title.fields.sppt_land_title'))
                             ->relationship('spptLandTitle', 'number')
@@ -333,6 +366,66 @@ class LandTitleResource extends Resource
                     ->sortable()
                     ->badge()
                     ->color('primary'),
+                Tables\Columns\TextColumn::make('village_name')
+                    ->label(__('land_title.fields.village'))
+                    ->state(function (LandTitle $record): string {
+                        // Try to get village from SPPT first, then Letter C
+                        if ($record->spptLandTitle && $record->spptLandTitle->village) {
+                            return ucwords(strtolower($record->spptLandTitle->village->name));
+                        }
+                        return '-';
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('spptLandTitle.village', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        });
+                    })
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->leftJoin('sppt_land_titles', 'land_titles.sppt_land_title_id', '=', 'sppt_land_titles.id')
+                            ->leftJoin('villages', 'sppt_land_titles.village_id', '=', 'villages.id')
+                            ->orderBy('villages.name', $direction)
+                            ->select('land_titles.*');
+                    }),
+                Tables\Columns\TextColumn::make('seller_name')
+                    ->label(__('land_title.fields.seller'))
+                    ->state(function (LandTitle $record): string {
+                        $seller = $record->landTitleApplicants()
+                            ->whereHas('applicantType', function ($query) {
+                                $query->where('code', 'seller');
+                            })
+                            ->with('user')
+                            ->first();
+                        return $seller?->user?->name ?? '-';
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('landTitleApplicants', function ($q) use ($search) {
+                            $q->whereHas('applicantType', function ($at) {
+                                $at->where('code', 'seller');
+                            })->whereHas('user', function ($u) use ($search) {
+                                $u->where('name', 'like', "%{$search}%");
+                            });
+                        });
+                    }),
+                Tables\Columns\TextColumn::make('buyer_name')
+                    ->label(__('land_title.fields.buyer'))
+                    ->state(function (LandTitle $record): string {
+                        $buyer = $record->landTitleApplicants()
+                            ->whereHas('applicantType', function ($query) {
+                                $query->where('code', 'buyer');
+                            })
+                            ->with('user')
+                            ->first();
+                        return $buyer?->user?->name ?? '-';
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('landTitleApplicants', function ($q) use ($search) {
+                            $q->whereHas('applicantType', function ($at) {
+                                $at->where('code', 'buyer');
+                            })->whereHas('user', function ($u) use ($search) {
+                                $u->where('name', 'like', "%{$search}%");
+                            });
+                        });
+                    }),
                 Tables\Columns\IconColumn::make('is_heir')
                     ->label(__('land_title.fields.is_heir'))
                     ->boolean()

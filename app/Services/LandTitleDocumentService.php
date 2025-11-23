@@ -157,6 +157,7 @@ class LandTitleDocumentService
     {
         $this->fillPPATInfo($template, $landTitle);
         $this->fillDocumentInfo($template, $landTitle);
+        $this->fillHeirDetails($template, $landTitle);
         $this->fillSellers($template, $landTitle);
         $this->fillConsent($template, $landTitle);
         $this->fillBuyer($template, $landTitle);
@@ -218,6 +219,35 @@ class LandTitleDocumentService
     }
 
     /**
+     * Fill heir details (for inheritance cases)
+     *
+     * @param TemplateProcessor $template
+     * @param LandTitle $landTitle
+     * @return void
+     */
+    private function fillHeirDetails($template, $landTitle): void
+    {
+        if ($landTitle->is_heir) {
+            $template->setValue('heir_from_name', $landTitle->heir_from_name ?? '-');
+            $template->setValue('death_place', $landTitle->death_place ?? '-');
+            $template->setValue('death_date',
+                $landTitle->death_date ? $this->formatIndonesianDate($landTitle->death_date) : '-');
+            $template->setValue('death_certificate_number', $landTitle->death_certificate_number ?? '-');
+            $template->setValue('death_certificate_issuer', $landTitle->death_certificate_issuer ?? '-');
+            $template->setValue('death_certificate_date',
+                $landTitle->death_certificate_date ? $this->formatIndonesianDate($landTitle->death_certificate_date) : '-');
+        } else {
+            // Fill with empty values if not an heir case
+            $template->setValue('heir_from_name', '-');
+            $template->setValue('death_place', '-');
+            $template->setValue('death_date', '-');
+            $template->setValue('death_certificate_number', '-');
+            $template->setValue('death_certificate_issuer', '-');
+            $template->setValue('death_certificate_date', '-');
+        }
+    }
+
+    /**
      * Fill sellers information (handle multiple sellers)
      *
      * @param TemplateProcessor $template
@@ -237,7 +267,7 @@ class LandTitleDocumentService
             return;
         }
 
-        // Check if template has seller count variable for cloning
+        // Try row cloning first (for table-based templates)
         try {
             $template->cloneRow('seller_name', $sellers->count());
 
@@ -246,7 +276,13 @@ class LandTitleDocumentService
                 $this->fillUserDetailsWithSuffix($template, $seller->user, 'seller', "#{$rowIndex}");
             }
         } catch (\Exception $e) {
-            // If cloning fails, just fill single seller
+            // If cloning fails, fill numbered sellers (seller_1_name, seller_2_name, etc.)
+            foreach ($sellers as $index => $seller) {
+                $sellerNumber = $index + 1;
+                $this->fillUserDetailsWithSuffix($template, $seller->user, "seller_{$sellerNumber}");
+            }
+
+            // Also fill base format for first seller (backward compatibility)
             $firstSeller = $sellers->first();
             $this->fillUserDetailsWithSuffix($template, $firstSeller->user, 'seller');
         }
@@ -290,7 +326,7 @@ class LandTitleDocumentService
             return;
         }
 
-        // Check if template has buyer count variable for cloning
+        // Try row cloning first (for table-based templates)
         try {
             $template->cloneRow('buyer_name', $buyers->count());
 
@@ -299,7 +335,13 @@ class LandTitleDocumentService
                 $this->fillUserDetailsWithSuffix($template, $buyer->user, 'buyer', "#{$rowIndex}");
             }
         } catch (\Exception $e) {
-            // If cloning fails, just fill single buyer
+            // If cloning fails, fill numbered buyers (buyer_1_name, buyer_2_name, etc.)
+            foreach ($buyers as $index => $buyer) {
+                $buyerNumber = $index + 1;
+                $this->fillUserDetailsWithSuffix($template, $buyer->user, "buyer_{$buyerNumber}");
+            }
+
+            // Also fill base format for first buyer (backward compatibility)
             $firstBuyer = $buyers->first();
             $this->fillUserDetailsWithSuffix($template, $firstBuyer->user, 'buyer');
         }
