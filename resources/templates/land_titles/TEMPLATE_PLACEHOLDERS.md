@@ -35,7 +35,16 @@ Example: `grant_multiple_sellers_single_buyer.docx`
 
 ### PPAT (Notary) Information
 - `${ppat_name}` - PPAT/Notary name
-- `${ppat_address}` - PPAT/Notary full address
+- `${ppat_address}` - PPAT/Notary full address (formatted: RT/RW, Road, Village, District, City, Province)
+
+**PPAT Address Components:**
+- `${ppat_road}` - Road/Street name
+- `${ppat_rt}` - RT number
+- `${ppat_rw}` - RW number
+- `${ppat_village}` - Village (Kelurahan/Desa)
+- `${ppat_district}` - District (Kecamatan)
+- `${ppat_city}` - City (Kota/Kabupaten)
+- `${ppat_province}` - Province (Provinsi)
 
 ### Document Information
 - `${document_number}` - Document number (format: number/year)
@@ -51,10 +60,19 @@ For single seller templates:
 - `${seller_name}` - Seller's full name
 - `${seller_birthplace}` - Seller's birthplace
 - `${seller_birthdate}` - Seller's birthdate in Indonesian format
-- `${seller_age}` - Seller's age with "tahun"
+- `${seller_age}` - Seller's age (calculated: current year - birth year) with "tahun"
 - `${seller_occupation}` - Seller's occupation
 - `${seller_national_id_number}` - Seller's National ID (KTP)
-- `${seller_address}` - Seller's full address
+- `${seller_address}` - Seller's full address (formatted)
+
+**Seller Address Components:**
+- `${seller_road}` - Road/Street name
+- `${seller_rt}` - RT number
+- `${seller_rw}` - RW number
+- `${seller_village}` - Village (Kelurahan/Desa)
+- `${seller_district}` - District (Kecamatan)
+- `${seller_city}` - City (Kota/Kabupaten)
+- `${seller_province}` - Province (Provinsi)
 
 For multiple sellers templates (use row cloning):
 - `${seller_name#1}`, `${seller_name#2}`, etc.
@@ -64,15 +82,25 @@ For multiple sellers templates (use row cloning):
 - `${seller_occupation#1}`, `${seller_occupation#2}`, etc.
 - `${seller_national_id_number#1}`, `${seller_national_id_number#2}`, etc.
 - `${seller_address#1}`, `${seller_address#2}`, etc.
+- `${seller_road#1}`, `${seller_rt#1}`, `${seller_rw#1}`, `${seller_village#1}`, etc.
 
 ### Consent Person Information (for templates with consent)
 - `${consent_name}` - Consent person's full name
 - `${consent_birthplace}` - Consent person's birthplace
 - `${consent_birthdate}` - Consent person's birthdate in Indonesian format
-- `${consent_age}` - Consent person's age with "tahun"
+- `${consent_age}` - Consent person's age (calculated: current year - birth year) with "tahun"
 - `${consent_occupation}` - Consent person's occupation
 - `${consent_national_id_number}` - Consent person's National ID (KTP)
-- `${consent_address}` - Consent person's full address
+- `${consent_address}` - Consent person's full address (formatted)
+
+**Consent Address Components:**
+- `${consent_road}` - Road/Street name
+- `${consent_rt}` - RT number
+- `${consent_rw}` - RW number
+- `${consent_village}` - Village (Kelurahan/Desa)
+- `${consent_district}` - District (Kecamatan)
+- `${consent_city}` - City (Kota/Kabupaten)
+- `${consent_province}` - Province (Provinsi)
 
 ### Buyer Information
 
@@ -80,10 +108,19 @@ For single buyer templates:
 - `${buyer_name}` - Buyer's full name
 - `${buyer_birthplace}` - Buyer's birthplace
 - `${buyer_birthdate}` - Buyer's birthdate in Indonesian format
-- `${buyer_age}` - Buyer's age with "tahun"
+- `${buyer_age}` - Buyer's age (calculated: current year - birth year) with "tahun"
 - `${buyer_occupation}` - Buyer's occupation
 - `${buyer_national_id_number}` - Buyer's National ID (KTP)
-- `${buyer_address}` - Buyer's full address
+- `${buyer_address}` - Buyer's full address (formatted)
+
+**Buyer Address Components:**
+- `${buyer_road}` - Road/Street name
+- `${buyer_rt}` - RT number
+- `${buyer_rw}` - RW number
+- `${buyer_village}` - Village (Kelurahan/Desa)
+- `${buyer_district}` - District (Kecamatan)
+- `${buyer_city}` - City (Kota/Kabupaten)
+- `${buyer_province}` - Province (Provinsi)
 
 For multiple buyers templates (use row cloning):
 - `${buyer_name#1}`, `${buyer_name#2}`, etc.
@@ -93,6 +130,7 @@ For multiple buyers templates (use row cloning):
 - `${buyer_occupation#1}`, `${buyer_occupation#2}`, etc.
 - `${buyer_national_id_number#1}`, `${buyer_national_id_number#2}`, etc.
 - `${buyer_address#1}`, `${buyer_address#2}`, etc.
+- `${buyer_road#1}`, `${buyer_rt#1}`, `${buyer_rw#1}`, `${buyer_village#1}`, etc.
 
 ### Land Information (SPPT)
 - `${sppt_number}` - SPPT number
@@ -101,7 +139,7 @@ For multiple buyers templates (use row cloning):
 - `${sppt_block}` - SPPT block number
 - `${sppt_land_area}` - SPPT land area
 - `${sppt_building_area}` - SPPT building area
-- `${sppt_village}` - Village name from SPPT
+- `${sppt_village}` - Village name from SPPT (formatted in Title Case)
 
 ### Land Information (Letter C)
 - `${letter_c_name}` - Letter C name
@@ -112,8 +150,8 @@ For multiple buyers templates (use row cloning):
 - `${letter_c_date}` - Letter C date in Indonesian format
 
 ### Land Area and Borders
-- `${land_area}` - Land area in m²
-- `${land_area_words}` - Land area in Indonesian words
+- `${land_area}` - Land area (formatted as integer, no decimals)
+- `${land_area_words}` - Land area in Indonesian words with "Meter Persegi"
 - `${north_border}` - North border description
 - `${east_border}` - East border description
 - `${south_border}` - South border description
@@ -135,15 +173,19 @@ For numbered witnesses (witness_1, witness_2):
 - `${witness_1_name}`, `${witness_2_name}` - Witness names
 - `${witness_1_birthplace}`, `${witness_2_birthplace}` - Witness birthplaces
 - `${witness_1_birthdate}`, `${witness_2_birthdate}` - Witness birthdates
-- `${witness_1_age}`, `${witness_2_age}` - Witness ages
+- `${witness_1_age}`, `${witness_2_age}` - Witness ages (calculated)
 - `${witness_1_occupation}`, `${witness_2_occupation}` - Witness occupations
 - `${witness_1_national_id_number}`, `${witness_2_national_id_number}` - Witness NIK
-- `${witness_1_address}`, `${witness_2_address}` - Witness addresses
+- `${witness_1_address}`, `${witness_2_address}` - Witness addresses (formatted)
+- `${witness_1_road}`, `${witness_1_rt}`, `${witness_1_rw}`, etc. - Address components
+- `${witness_1_village}`, `${witness_1_district}`, `${witness_1_city}`, `${witness_1_province}`
 
 For dynamic witness count (use row cloning with `${witness_name}`):
 - `${witness_name#1}`, `${witness_name#2}`, etc.
 - `${witness_birthplace#1}`, `${witness_birthplace#2}`, etc.
-- Similar pattern for other witness fields
+- `${witness_birthdate#1}`, `${witness_age#1}`, `${witness_occupation#1}`, etc.
+- `${witness_national_id_number#1}`, `${witness_address#1}`, etc.
+- `${witness_road#1}`, `${witness_rt#1}`, `${witness_rw#1}`, `${witness_village#1}`, etc.
 
 ## Using Row Cloning in Templates
 

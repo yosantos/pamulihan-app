@@ -178,6 +178,25 @@ class LandTitleDocumentService
 
         $template->setValue('ppat_name', $creator->name ?? '-');
         $template->setValue('ppat_address', $this->formatAddress($creator) ?? '-');
+
+        // Individual PPAT address components
+        if ($creator) {
+            $template->setValue('ppat_road', $creator->road ?? '-');
+            $template->setValue('ppat_rt', $creator->rt ?? '-');
+            $template->setValue('ppat_rw', $creator->rw ?? '-');
+            $template->setValue('ppat_village', $creator->village ?? '-');
+            $template->setValue('ppat_district', $creator->district ?? '-');
+            $template->setValue('ppat_city', $creator->city ?? '-');
+            $template->setValue('ppat_province', $creator->province ?? '-');
+        } else {
+            $template->setValue('ppat_road', '-');
+            $template->setValue('ppat_rt', '-');
+            $template->setValue('ppat_rw', '-');
+            $template->setValue('ppat_village', '-');
+            $template->setValue('ppat_district', '-');
+            $template->setValue('ppat_city', '-');
+            $template->setValue('ppat_province', '-');
+        }
     }
 
     /**
@@ -215,13 +234,7 @@ class LandTitleDocumentService
             ->get();
 
         if ($sellers->isEmpty()) {
-            $template->setValue('seller_name', '-');
-            $template->setValue('seller_birthplace', '-');
-            $template->setValue('seller_birthdate', '-');
-            $template->setValue('seller_age', '-');
-            $template->setValue('seller_occupation', '-');
-            $template->setValue('seller_national_id_number', '-');
-            $template->setValue('seller_address', '-');
+            $this->fillEmptyUserPlaceholders($template, 'seller');
             return;
         }
 
@@ -231,32 +244,12 @@ class LandTitleDocumentService
 
             foreach ($sellers as $index => $seller) {
                 $rowIndex = $index + 1;
-                $user = $seller->user;
-
-                $template->setValue("seller_name#{$rowIndex}", $user->name ?? '-');
-                $template->setValue("seller_birthplace#{$rowIndex}", $user->birthplace ?? '-');
-                $template->setValue("seller_birthdate#{$rowIndex}",
-                    $user->birthdate ? $this->formatIndonesianDate($user->birthdate) : '-');
-                $template->setValue("seller_age#{$rowIndex}",
-                    $user->birthdate ? $this->calculateAge($user->birthdate) : '-');
-                $template->setValue("seller_occupation#{$rowIndex}", $user->occupation ?? '-');
-                $template->setValue("seller_national_id_number#{$rowIndex}", $user->national_id_number ?? '-');
-                $template->setValue("seller_address#{$rowIndex}", $this->formatAddress($user) ?? '-');
+                $this->fillUserDetailsWithSuffix($template, $seller->user, 'seller', "#{$rowIndex}");
             }
         } catch (\Exception $e) {
             // If cloning fails, just fill single seller
             $firstSeller = $sellers->first();
-            $user = $firstSeller->user;
-
-            $template->setValue('seller_name', $user->name ?? '-');
-            $template->setValue('seller_birthplace', $user->birthplace ?? '-');
-            $template->setValue('seller_birthdate',
-                $user->birthdate ? $this->formatIndonesianDate($user->birthdate) : '-');
-            $template->setValue('seller_age',
-                $user->birthdate ? $this->calculateAge($user->birthdate) : '-');
-            $template->setValue('seller_occupation', $user->occupation ?? '-');
-            $template->setValue('seller_national_id_number', $user->national_id_number ?? '-');
-            $template->setValue('seller_address', $this->formatAddress($user) ?? '-');
+            $this->fillUserDetailsWithSuffix($template, $firstSeller->user, 'seller');
         }
     }
 
@@ -275,28 +268,7 @@ class LandTitleDocumentService
             })
             ->first();
 
-        if (!$consent) {
-            $template->setValue('consent_name', '-');
-            $template->setValue('consent_birthplace', '-');
-            $template->setValue('consent_birthdate', '-');
-            $template->setValue('consent_age', '-');
-            $template->setValue('consent_occupation', '-');
-            $template->setValue('consent_national_id_number', '-');
-            $template->setValue('consent_address', '-');
-            return;
-        }
-
-        $user = $consent->user;
-
-        $template->setValue('consent_name', $user->name ?? '-');
-        $template->setValue('consent_birthplace', $user->birthplace ?? '-');
-        $template->setValue('consent_birthdate',
-            $user->birthdate ? $this->formatIndonesianDate($user->birthdate) : '-');
-        $template->setValue('consent_age',
-            $user->birthdate ? $this->calculateAge($user->birthdate) : '-');
-        $template->setValue('consent_occupation', $user->occupation ?? '-');
-        $template->setValue('consent_national_id_number', $user->national_id_number ?? '-');
-        $template->setValue('consent_address', $this->formatAddress($user) ?? '-');
+        $this->fillUserDetailsWithSuffix($template, $consent?->user, 'consent');
     }
 
     /**
@@ -315,13 +287,7 @@ class LandTitleDocumentService
             ->get();
 
         if ($buyers->isEmpty()) {
-            $template->setValue('buyer_name', '-');
-            $template->setValue('buyer_birthplace', '-');
-            $template->setValue('buyer_birthdate', '-');
-            $template->setValue('buyer_age', '-');
-            $template->setValue('buyer_occupation', '-');
-            $template->setValue('buyer_national_id_number', '-');
-            $template->setValue('buyer_address', '-');
+            $this->fillEmptyUserPlaceholders($template, 'buyer');
             return;
         }
 
@@ -331,32 +297,12 @@ class LandTitleDocumentService
 
             foreach ($buyers as $index => $buyer) {
                 $rowIndex = $index + 1;
-                $user = $buyer->user;
-
-                $template->setValue("buyer_name#{$rowIndex}", $user->name ?? '-');
-                $template->setValue("buyer_birthplace#{$rowIndex}", $user->birthplace ?? '-');
-                $template->setValue("buyer_birthdate#{$rowIndex}",
-                    $user->birthdate ? $this->formatIndonesianDate($user->birthdate) : '-');
-                $template->setValue("buyer_age#{$rowIndex}",
-                    $user->birthdate ? $this->calculateAge($user->birthdate) : '-');
-                $template->setValue("buyer_occupation#{$rowIndex}", $user->occupation ?? '-');
-                $template->setValue("buyer_national_id_number#{$rowIndex}", $user->national_id_number ?? '-');
-                $template->setValue("buyer_address#{$rowIndex}", $this->formatAddress($user) ?? '-');
+                $this->fillUserDetailsWithSuffix($template, $buyer->user, 'buyer', "#{$rowIndex}");
             }
         } catch (\Exception $e) {
             // If cloning fails, just fill single buyer
             $firstBuyer = $buyers->first();
-            $user = $firstBuyer->user;
-
-            $template->setValue('buyer_name', $user->name ?? '-');
-            $template->setValue('buyer_birthplace', $user->birthplace ?? '-');
-            $template->setValue('buyer_birthdate',
-                $user->birthdate ? $this->formatIndonesianDate($user->birthdate) : '-');
-            $template->setValue('buyer_age',
-                $user->birthdate ? $this->calculateAge($user->birthdate) : '-');
-            $template->setValue('buyer_occupation', $user->occupation ?? '-');
-            $template->setValue('buyer_national_id_number', $user->national_id_number ?? '-');
-            $template->setValue('buyer_address', $this->formatAddress($user) ?? '-');
+            $this->fillUserDetailsWithSuffix($template, $firstBuyer->user, 'buyer');
         }
     }
 
@@ -378,7 +324,7 @@ class LandTitleDocumentService
             $template->setValue('sppt_block', $sppt->block ?? '-');
             $template->setValue('sppt_land_area', $sppt->land_area ?? '-');
             $template->setValue('sppt_building_area', $sppt->building_area ?? '-');
-            $template->setValue('sppt_village', $sppt->village->name ?? '-');
+            $template->setValue('sppt_village', $sppt->village ? ucwords(strtolower($sppt->village->name)) : '-');
         } else {
             $template->setValue('sppt_number', '-');
             $template->setValue('sppt_year', '-');
@@ -408,10 +354,10 @@ class LandTitleDocumentService
             $template->setValue('letter_c_date', '-');
         }
 
-        // Land area and borders
-        $template->setValue('land_area', $landTitle->area_of_the_land ?? '-');
-        $template->setValue('land_area_words', $landTitle->area_of_the_land_wording ??
-            ($landTitle->area_of_the_land ? $this->numberToWords($landTitle->area_of_the_land) : '-'));
+        // Land area and borders (format as integer, no decimals)
+        $template->setValue('land_area',
+            $landTitle->area_of_the_land ? number_format($landTitle->area_of_the_land, 0, ',', '.') : '-');
+        $template->setValue('land_area_words', $landTitle->area_of_the_land_wording ?? '-');
 
         $template->setValue('north_border', $landTitle->north_border ?? '-');
         $template->setValue('east_border', $landTitle->east_border ?? '-');
@@ -470,13 +416,7 @@ class LandTitleDocumentService
         if ($witnesses->isEmpty()) {
             // Fill default witness placeholders
             for ($i = 1; $i <= 2; $i++) {
-                $template->setValue("witness_{$i}_name", '-');
-                $template->setValue("witness_{$i}_birthplace", '-');
-                $template->setValue("witness_{$i}_birthdate", '-');
-                $template->setValue("witness_{$i}_age", '-');
-                $template->setValue("witness_{$i}_occupation", '-');
-                $template->setValue("witness_{$i}_national_id_number", '-');
-                $template->setValue("witness_{$i}_address", '-');
+                $this->fillEmptyUserPlaceholders($template, "witness_{$i}");
             }
             return;
         }
@@ -487,33 +427,13 @@ class LandTitleDocumentService
 
             foreach ($witnesses as $index => $witness) {
                 $rowIndex = $index + 1;
-                $user = $witness->user;
-
-                $template->setValue("witness_name#{$rowIndex}", $user->name ?? '-');
-                $template->setValue("witness_birthplace#{$rowIndex}", $user->birthplace ?? '-');
-                $template->setValue("witness_birthdate#{$rowIndex}",
-                    $user->birthdate ? $this->formatIndonesianDate($user->birthdate) : '-');
-                $template->setValue("witness_age#{$rowIndex}",
-                    $user->birthdate ? $this->calculateAge($user->birthdate) : '-');
-                $template->setValue("witness_occupation#{$rowIndex}", $user->occupation ?? '-');
-                $template->setValue("witness_national_id_number#{$rowIndex}", $user->national_id_number ?? '-');
-                $template->setValue("witness_address#{$rowIndex}", $this->formatAddress($user) ?? '-');
+                $this->fillUserDetailsWithSuffix($template, $witness->user, 'witness', "#{$rowIndex}");
             }
         } catch (\Exception $e) {
             // If cloning fails, fill numbered witnesses (witness_1_name, witness_2_name, etc.)
             foreach ($witnesses as $index => $witness) {
                 $witnessNumber = $index + 1;
-                $user = $witness->user;
-
-                $template->setValue("witness_{$witnessNumber}_name", $user->name ?? '-');
-                $template->setValue("witness_{$witnessNumber}_birthplace", $user->birthplace ?? '-');
-                $template->setValue("witness_{$witnessNumber}_birthdate",
-                    $user->birthdate ? $this->formatIndonesianDate($user->birthdate) : '-');
-                $template->setValue("witness_{$witnessNumber}_age",
-                    $user->birthdate ? $this->calculateAge($user->birthdate) : '-');
-                $template->setValue("witness_{$witnessNumber}_occupation", $user->occupation ?? '-');
-                $template->setValue("witness_{$witnessNumber}_national_id_number", $user->national_id_number ?? '-');
-                $template->setValue("witness_{$witnessNumber}_address", $this->formatAddress($user) ?? '-');
+                $this->fillUserDetailsWithSuffix($template, $witness->user, "witness_{$witnessNumber}");
             }
         }
     }
@@ -677,5 +597,70 @@ class LandTitleDocumentService
         $timestamp = now()->format('YmdHis');
 
         return "{$typeCode}_{$number}_{$timestamp}.docx";
+    }
+
+    /**
+     * Fill user details with optional suffix for cloned rows
+     *
+     * @param TemplateProcessor $template
+     * @param \App\Models\User|null $user
+     * @param string $prefix (e.g., 'seller', 'buyer', 'witness', 'consent')
+     * @param string $suffix (e.g., '#1', '#2' for cloned rows, or empty for single)
+     * @return void
+     */
+    private function fillUserDetailsWithSuffix($template, $user, string $prefix, string $suffix = ''): void
+    {
+        if (!$user) {
+            $this->fillEmptyUserPlaceholders($template, $prefix, $suffix);
+            return;
+        }
+
+        // Basic information
+        $template->setValue("{$prefix}_name{$suffix}", $user->name ?? '-');
+        $template->setValue("{$prefix}_birthplace{$suffix}", $user->birthplace ?? '-');
+        $template->setValue("{$prefix}_birthdate{$suffix}",
+            $user->birthdate ? $this->formatIndonesianDate($user->birthdate) : '-');
+        $template->setValue("{$prefix}_age{$suffix}",
+            $user->birthdate ? $this->calculateAge($user->birthdate) : '-');
+        $template->setValue("{$prefix}_occupation{$suffix}", $user->occupation ?? '-');
+        $template->setValue("{$prefix}_national_id_number{$suffix}", $user->national_id_number ?? '-');
+
+        // Full address
+        $template->setValue("{$prefix}_address{$suffix}", $this->formatAddress($user));
+
+        // Individual address components
+        $template->setValue("{$prefix}_road{$suffix}", $user->road ?? '-');
+        $template->setValue("{$prefix}_rt{$suffix}", $user->rt ?? '-');
+        $template->setValue("{$prefix}_rw{$suffix}", $user->rw ?? '-');
+        $template->setValue("{$prefix}_village{$suffix}", $user->village ?? '-');
+        $template->setValue("{$prefix}_district{$suffix}", $user->district ?? '-');
+        $template->setValue("{$prefix}_city{$suffix}", $user->city ?? '-');
+        $template->setValue("{$prefix}_province{$suffix}", $user->province ?? '-');
+    }
+
+    /**
+     * Fill empty user placeholders
+     *
+     * @param TemplateProcessor $template
+     * @param string $prefix
+     * @param string $suffix
+     * @return void
+     */
+    private function fillEmptyUserPlaceholders($template, string $prefix, string $suffix = ''): void
+    {
+        $template->setValue("{$prefix}_name{$suffix}", '-');
+        $template->setValue("{$prefix}_birthplace{$suffix}", '-');
+        $template->setValue("{$prefix}_birthdate{$suffix}", '-');
+        $template->setValue("{$prefix}_age{$suffix}", '-');
+        $template->setValue("{$prefix}_occupation{$suffix}", '-');
+        $template->setValue("{$prefix}_national_id_number{$suffix}", '-');
+        $template->setValue("{$prefix}_address{$suffix}", '-');
+        $template->setValue("{$prefix}_road{$suffix}", '-');
+        $template->setValue("{$prefix}_rt{$suffix}", '-');
+        $template->setValue("{$prefix}_rw{$suffix}", '-');
+        $template->setValue("{$prefix}_village{$suffix}", '-');
+        $template->setValue("{$prefix}_district{$suffix}", '-');
+        $template->setValue("{$prefix}_city{$suffix}", '-');
+        $template->setValue("{$prefix}_province{$suffix}", '-');
     }
 }
