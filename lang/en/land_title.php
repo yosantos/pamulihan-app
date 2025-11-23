@@ -16,6 +16,7 @@ return [
     'fields' => [
         'land_title_number' => 'Land Title Number',
         'land_title_type' => 'Land Title Type',
+        'is_heir' => 'Is Heir',
         'sppt_land_title' => 'SPPT',
         'letter_c_land_title' => 'Letter C',
         'transaction_amount' => 'Transaction Amount',
@@ -66,6 +67,7 @@ return [
 
     'helpers' => [
         'land_title_number' => 'Format: 1/2025 (auto-generated)',
+        'is_heir' => 'Toggle if this land title is for an heir or inheritance case',
         'sppt_land_title' => 'Reference to SPPT document if available',
         'letter_c_land_title' => 'Reference to Letter C document if available',
         'transaction_amount' => 'Amount in words will be generated automatically',

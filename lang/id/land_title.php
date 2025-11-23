@@ -16,6 +16,7 @@ return [
     'fields' => [
         'land_title_number' => 'Nomor Surat Tanah',
         'land_title_type' => 'Jenis Surat Tanah',
+        'is_heir' => 'Adalah Ahli Waris',
         'sppt_land_title' => 'SPPT',
         'letter_c_land_title' => 'Letter C',
         'transaction_amount' => 'Nilai Transaksi',
@@ -66,6 +67,7 @@ return [
 
     'helpers' => [
         'land_title_number' => 'Format: 1/2025 (otomatis dibuat)',
+        'is_heir' => 'Aktifkan jika surat tanah ini untuk ahli waris atau kasus warisan',
         'sppt_land_title' => 'Referensi ke dokumen SPPT jika tersedia',
         'letter_c_land_title' => 'Referensi ke dokumen Letter C jika tersedia',
         'transaction_amount' => 'Terbilang akan dibuat otomatis',

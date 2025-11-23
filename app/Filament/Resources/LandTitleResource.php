@@ -65,6 +65,11 @@ class LandTitleResource extends Resource
                                     ->maxLength(255),
                             ])
                             ->placeholder(__('land_title.placeholders.land_title_type')),
+                        Forms\Components\Toggle::make('is_heir')
+                            ->label(__('land_title.fields.is_heir'))
+                            ->default(false)
+                            ->helperText(__('land_title.helpers.is_heir'))
+                            ->inline(false),
                         Forms\Components\Select::make('sppt_land_title_id')
                             ->label(__('land_title.fields.sppt_land_title'))
                             ->relationship('spptLandTitle', 'number')
@@ -328,6 +333,11 @@ class LandTitleResource extends Resource
                     ->sortable()
                     ->badge()
                     ->color('primary'),
+                Tables\Columns\IconColumn::make('is_heir')
+                    ->label(__('land_title.fields.is_heir'))
+                    ->boolean()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('land_title.fields.status'))
                     ->badge()
