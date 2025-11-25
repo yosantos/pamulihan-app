@@ -135,16 +135,23 @@ class LandTitleResource extends Resource
                             ->placeholder(__('land_title.placeholders.transaction_amount'))
                             ->helperText(__('land_title.helpers.transaction_amount'))
                             ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
+                            ->afterStateUpdated(function ($state, callable $set, callable $get, $record) {
                                 $amount = (float) str_replace(',', '', $state ?? 0);
 
                                 // Auto-calculate PPH (2.5%)
                                 $pph = $amount * 0.025;
                                 $set('pph', $pph);
 
-                                // Auto-calculate PPAT amount (2%)
+                                // Auto-calculate PPAT amount (2%) only if not manually changed
                                 $ppatAmount = $amount * 0.02;
-                                $set('ppat_amount', $ppatAmount);
+                                $currentPpatAmount = (float) str_replace(',', '', $get('ppat_amount') ?? 0);
+
+                                // Only auto-fill if:
+                                // 1. Creating new record (no $record), OR
+                                // 2. Current ppat_amount is 0 or matches the auto-calculated value
+                                if (!$record || $currentPpatAmount == 0 || abs($currentPpatAmount - $ppatAmount) < 0.01) {
+                                    $set('ppat_amount', $ppatAmount);
+                                }
                             })
                             ->columnSpanFull(),
                         Forms\Components\Placeholder::make('transaction_amount_wording')
