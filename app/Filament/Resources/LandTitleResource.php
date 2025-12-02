@@ -20,9 +20,14 @@ class LandTitleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-check';
 
-    protected static ?string $navigationGroup = 'Land Management';
+    protected static ?string $navigationGroup = null;
 
     protected static ?int $navigationSort = 1;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.land_management');
+    }
 
     public static function getNavigationLabel(): string
     {

@@ -16,7 +16,12 @@ class SpptLandTitleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Land Management';
+    protected static ?string $navigationGroup = null;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.land_management');
+    }
 
     protected static ?int $navigationSort = 2;
 

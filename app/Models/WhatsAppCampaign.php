@@ -6,12 +6,31 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class WhatsAppCampaign extends Model
 {
     use HasFactory;
 
     protected $table = 'whatsapp_campaigns';
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($campaign) {
+            if (empty($campaign->campaign_code)) {
+                $campaign->campaign_code = (string) Str::uuid();
+            }
+            if (empty($campaign->api_key)) {
+                $campaign->api_key = (string) Str::uuid();
+            }
+        });
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -26,6 +45,8 @@ class WhatsAppCampaign extends Model
         'is_active',
         'usage_count',
         'created_by',
+        'campaign_code',
+        'api_key',
     ];
 
     /**
@@ -57,6 +78,16 @@ class WhatsAppCampaign extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(WhatsAppMessage::class, 'campaign_id');
+    }
+
+    /**
+     * Get all API logs for this campaign.
+     *
+     * @return HasMany
+     */
+    public function apiLogs(): HasMany
+    {
+        return $this->hasMany(CampaignApiLog::class, 'campaign_id');
     }
 
     /**
@@ -95,6 +126,7 @@ class WhatsAppCampaign extends Model
 
     /**
      * Replace variables in the template with provided values.
+     * Supports both [variable] and {variable} formats.
      *
      * @param array $values Array of variable_name => value pairs
      * @return string
@@ -103,12 +135,14 @@ class WhatsAppCampaign extends Model
     {
         $message = $this->template;
 
-        // First, replace the static company name variable
+        // First, replace the static company name variable (both formats)
         $message = str_replace('[Name_Company]', $this->company_name, $message);
+        $message = str_replace('{Name_Company}', $this->company_name, $message);
 
-        // Then replace dynamic variables
+        // Then replace dynamic variables (both square brackets and curly braces)
         foreach ($values as $variable => $value) {
             $message = str_replace('[' . $variable . ']', $value, $message);
+            $message = str_replace('{' . $variable . '}', $value, $message);
         }
 
         return $message;

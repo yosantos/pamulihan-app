@@ -36,6 +36,7 @@ return [
     ],
 
     'whatsapp' => [
+        'base_url' => env('WHATSAPP_BASE_URL', 'http://localhost:8081'),
         'api_url' => env('WHATSAPP_API_URL', 'http://localhost:8081/api/send'),
         'api_key' => env('WHATSAPP_API_KEY'),
     ],

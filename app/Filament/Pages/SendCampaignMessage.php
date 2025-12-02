@@ -21,15 +21,25 @@ class SendCampaignMessage extends Page implements Forms\Contracts\HasForms
 
     protected static ?string $navigationIcon = 'heroicon-o-paper-airplane';
 
-    protected static ?string $navigationLabel = 'Send Campaign Message';
+    protected static ?string $navigationLabel = null;
 
-    protected static ?string $navigationGroup = 'WhatsApp Management';
+    protected static ?string $navigationGroup = null;
 
     protected static ?int $navigationSort = 2;
 
     protected static string $view = 'filament.pages.send-campaign-message';
 
     public ?array $data = [];
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.whatsapp_management');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('navigation.pages.send_campaign_message');
+    }
 
     public function mount(): void
     {

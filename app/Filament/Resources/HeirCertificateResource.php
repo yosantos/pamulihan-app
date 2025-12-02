@@ -27,11 +27,19 @@ class HeirCertificateResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Certificates';
+    protected static ?string $navigationGroup = null;
 
     protected static ?string $navigationLabel = null;
 
     protected static ?int $navigationSort = 1;
+
+    /**
+     * Get the navigation group.
+     */
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.groups.civil_registration');
+    }
 
     /**
      * Get the navigation label.

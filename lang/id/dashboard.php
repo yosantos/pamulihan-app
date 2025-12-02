@@ -7,6 +7,13 @@ return [
     'end_date' => 'Tanggal Akhir',
 
     // Widgets
-    'heir_certificates' => 'Sertifikat Ahli Waris',
+    'heir_certificates' => 'Ahli Waris',
     'completed_total' => 'Selesai / Total',
+
+    'national_id_applicants' => 'Pemohon KTP',
+    'total_applicants' => 'Total Pemohon',
+    'male_applicants' => 'Laki-laki',
+    'female_applicants' => 'Perempuan',
+    'male' => 'Pemohon Laki-laki',
+    'female' => 'Pemohon Perempuan',
 ];

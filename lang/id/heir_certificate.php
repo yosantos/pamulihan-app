@@ -2,23 +2,23 @@
 
 return [
     // Navigation & Model
-    'navigation' => 'Sertifikat Ahli Waris',
-    'model_label' => 'Sertifikat Ahli Waris',
-    'plural_model_label' => 'Sertifikat Ahli Waris',
+    'navigation' => 'Ahli Waris',
+    'model_label' => 'Ahli Waris',
+    'plural_model_label' => 'Ahli Waris',
 
     // Pages
     'pages' => [
-        'list' => 'Daftar Sertifikat Ahli Waris',
-        'create' => 'Buat Sertifikat Ahli Waris',
-        'edit' => 'Edit Sertifikat Ahli Waris',
-        'view' => 'Lihat Sertifikat Ahli Waris',
+        'list' => 'Daftar Ahli Waris',
+        'create' => 'Buat Ahli Waris',
+        'edit' => 'Edit Ahli Waris',
+        'view' => 'Lihat Ahli Waris',
     ],
 
     // Sections
     'sections' => [
         'certificate_information' => [
-            'title' => 'Informasi Sertifikat',
-            'description' => 'Masukkan informasi dasar untuk sertifikat ahli waris',
+            'title' => 'Informasi Ahli Waris',
+            'description' => 'Masukkan informasi dasar untuk Ahli Waris',
         ],
         'deceased_information' => [
             'title' => 'Informasi Almarhum',
@@ -26,14 +26,14 @@ return [
         ],
         'heirs_information' => [
             'title' => 'Informasi Ahli Waris',
-            'description' => 'Tambahkan semua ahli waris untuk sertifikat ini (minimal 1 ahli waris diperlukan)',
+            'description' => 'Tambahkan semua ahli waris untuk Ahli Waris ini (minimal 1 ahli waris diperlukan)',
         ],
     ],
 
     // Fields
     'fields' => [
-        'certificate_number' => 'Nomor Sertifikat',
-        'certificate_date' => 'Tanggal Sertifikat',
+        'certificate_number' => 'Nomor Ahli Waris',
+        'certificate_date' => 'Tanggal Ahli Waris',
         'year' => 'Tahun',
         'applicant_name' => 'Nama Pemohon',
         'applicant_address' => 'Alamat Pemohon',
@@ -53,9 +53,9 @@ return [
     // Field Helpers
     'helpers' => [
         'certificate_number' => 'Format: 1/2025 (otomatis dibuat)',
-        'certificate_date' => 'Tanggal sertifikat ini diterbitkan',
+        'certificate_date' => 'Tanggal Ahli Waris ini diterbitkan',
         'phone_number' => 'Format telepon Indonesia (08xxx atau 62xxx). Akan diformat otomatis ke 62xxx',
-        'status' => 'Status sertifikat saat ini',
+        'status' => 'Status Ahli Waris saat ini',
         'person_in_charge' => 'Pilih orang yang bertanggung jawab menangani sertifikat ini',
         'date_of_death' => 'Tanggal orang tersebut meninggal',
     ],
@@ -187,8 +187,8 @@ return [
 
     // Table Messages
     'table' => [
-        'empty_state_heading' => 'Belum ada sertifikat ahli waris',
-        'empty_state_description' => 'Buat sertifikat ahli waris pertama Anda untuk memulai.',
+        'empty_state_heading' => 'Belum ada ahli waris',
+        'empty_state_description' => 'Buat ahli waris pertama Anda untuk memulai.',
         'phone_copied' => 'Nomor telepon disalin!',
         'not_provided' => 'Tidak tersedia',
         'not_assigned' => 'Belum ditugaskan',
