@@ -16,4 +16,11 @@ return [
     'female_applicants' => 'Perempuan',
     'male' => 'Pemohon Laki-laki',
     'female' => 'Pemohon Perempuan',
+
+    'bank_loan_registrations' => 'Registrasi Pinjaman Bank',
+
+    'document_legalizations' => 'Legalisasi Dokumen',
+    'total_legalizations' => 'Total Legalisasi',
+
+    'family_id_cards' => 'Kartu Keluarga',
 ];

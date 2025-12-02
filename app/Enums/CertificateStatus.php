@@ -6,6 +6,7 @@ enum CertificateStatus: string
 {
     case ON_PROGRESS = 'on_progress';
     case COMPLETED = 'completed';
+    case REJECTED = 'rejected';
 
     /**
      * Get the human-readable label for the status.
@@ -17,6 +18,7 @@ enum CertificateStatus: string
         return match($this) {
             self::ON_PROGRESS => 'On Progress',
             self::COMPLETED => 'Completed',
+            self::REJECTED => 'Rejected',
         };
     }
 
@@ -30,6 +32,7 @@ enum CertificateStatus: string
         return match($this) {
             self::ON_PROGRESS => 'warning',
             self::COMPLETED => 'success',
+            self::REJECTED => 'danger',
         };
     }
 
@@ -43,6 +46,7 @@ enum CertificateStatus: string
         return [
             self::ON_PROGRESS->value => self::ON_PROGRESS->getLabel(),
             self::COMPLETED->value => self::COMPLETED->getLabel(),
+            self::REJECTED->value => self::REJECTED->getLabel(),
         ];
     }
 }

@@ -16,4 +16,11 @@ return [
     'female_applicants' => 'Female',
     'male' => 'Male Applicants',
     'female' => 'Female Applicants',
+
+    'bank_loan_registrations' => 'Bank Loan Registrations',
+
+    'document_legalizations' => 'Document Legalizations',
+    'total_legalizations' => 'Total Legalizations',
+
+    'family_id_cards' => 'Family ID Cards',
 ];

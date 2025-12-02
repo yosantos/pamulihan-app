@@ -6,6 +6,7 @@ return [
         'land_management' => 'Land Management',
         'communication' => 'Communication',
         'whatsapp_management' => 'WhatsApp Management',
+        'settings' => 'Settings',
     ],
 
     'pages' => [

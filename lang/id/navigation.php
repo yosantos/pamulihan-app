@@ -6,6 +6,7 @@ return [
         'land_management' => 'Manajemen Tanah',
         'communication' => 'Komunikasi',
         'whatsapp_management' => 'Manajemen WhatsApp',
+        'settings' => 'Pengaturan',
     ],
 
     'pages' => [
