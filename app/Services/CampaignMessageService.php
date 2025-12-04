@@ -224,6 +224,140 @@ class CampaignMessageService
     }
 
     /**
+     * Send a WhatsApp message with file attachment using a campaign template
+     *
+     * @param string $campaignName The campaign name
+     * @param string $phoneNumber The recipient's phone number
+     * @param string $filePath Full path to the file to send
+     * @param array $variables Array of variable_name => value pairs for template replacement
+     * @param int|null $userId The user ID who triggered this message
+     * @return array ['success' => bool, 'message' => string, 'data' => array|null]
+     */
+    public function sendCampaignWithFile(
+        string $campaignName,
+        string $phoneNumber,
+        string $filePath,
+        array $variables = [],
+        ?int $userId = null
+    ): array {
+        DB::beginTransaction();
+
+        try {
+            // Get campaign by name
+            $campaign = $this->getCampaignByName($campaignName);
+
+            if (!$campaign) {
+                return [
+                    'success' => false,
+                    'message' => "Campaign '{$campaignName}' not found",
+                    'data' => null,
+                ];
+            }
+
+            // Validate campaign is active
+            if (!$campaign->isActive()) {
+                return [
+                    'success' => false,
+                    'message' => "Campaign '{$campaign->name}' is not active",
+                    'data' => null,
+                ];
+            }
+
+            // Validate phone number
+            if (!$this->whatsAppService->validatePhoneNumber($phoneNumber)) {
+                return [
+                    'success' => false,
+                    'message' => "Invalid phone number format: {$phoneNumber}",
+                    'data' => null,
+                ];
+            }
+
+            // Validate required variables
+            $missingVariables = $campaign->validateVariables($variables);
+            if (!empty($missingVariables)) {
+                return [
+                    'success' => false,
+                    'message' => 'Missing required variables: ' . implode(', ', $missingVariables),
+                    'data' => ['missing_variables' => $missingVariables],
+                ];
+            }
+
+            // Replace variables in template
+            $message = $campaign->replaceVariables($variables);
+
+            // Create WhatsAppMessage record (pending status)
+            $whatsAppMessage = WhatsAppMessage::create([
+                'phone_number' => $phoneNumber,
+                'message' => $message,
+                'campaign_id' => $campaign->id,
+                'variables_used' => $variables,
+                'status' => 'pending',
+                'created_by' => $userId ?? auth()->id(),
+                'retry_count' => 0,
+            ]);
+
+            try {
+                // Send the message with file via WhatsApp service
+                $sendResult = $this->whatsAppService->sendWithFile($phoneNumber, $message, $filePath);
+
+                // Mark as sent
+                $whatsAppMessage->markAsSent($userId ?? auth()->id());
+
+                // Increment campaign usage
+                $campaign->incrementUsage();
+
+                DB::commit();
+
+                Log::info('Campaign message with file sent successfully', [
+                    'campaign_id' => $campaign->id,
+                    'campaign_name' => $campaign->name,
+                    'message_id' => $whatsAppMessage->id,
+                    'phone' => $phoneNumber,
+                    'file' => basename($filePath),
+                ]);
+
+                return [
+                    'success' => true,
+                    'message' => 'Campaign message with file sent successfully',
+                    'data' => [
+                        'message_id' => $whatsAppMessage->id,
+                        'campaign_id' => $campaign->id,
+                        'campaign_name' => $campaign->name,
+                        'phone_number' => $phoneNumber,
+                        'file' => basename($filePath),
+                        'whatsapp_response' => $sendResult['data'] ?? null,
+                    ],
+                ];
+
+            } catch (Exception $e) {
+                // Mark as failed
+                $whatsAppMessage->markAsFailed($e->getMessage());
+
+                DB::commit(); // Commit the failed record
+
+                throw $e;
+            }
+
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::error('Campaign message with file send failed', [
+                'campaign_name' => $campaignName,
+                'phone' => $phoneNumber,
+                'file' => $filePath ?? 'N/A',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Failed to send campaign message with file: ' . $e->getMessage(),
+                'data' => null,
+            ];
+        }
+    }
+
+    /**
      * Get campaign by name
      *
      * @param string $name The campaign name

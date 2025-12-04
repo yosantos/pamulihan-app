@@ -127,6 +127,7 @@ return [
         'mark_on_progress' => 'Tandai Dalam Proses',
         'create' => 'Buat',
         'send_whatsapp' => 'Kirim WhatsApp',
+        'download_file' => 'Unduh Dokumen Selesai',
     ],
 
     // Create WhatsApp Notification
@@ -171,12 +172,14 @@ return [
         'applicant_details' => 'Nama: :name | Telepon: :phone',
         'select_campaign' => 'Pilih Campaign Penyelesaian',
         'campaign_placeholder' => 'Pilih template notifikasi penyelesaian',
+        'file_upload' => 'Unggah Dokumen Selesai (PDF) - Opsional',
+        'file_upload_helper' => 'Opsional: Unggah dokumen Kartu Keluarga yang sudah selesai (hanya PDF, maksimal 10MB). Jika diunggah, file akan dikirim ke pemohon melalui WhatsApp bersama dengan pesan.',
         'message_preview' => 'Pratinjau Pesan',
         'no_preview' => 'Pilih campaign untuk melihat pratinjau pesan',
         'no_campaign_configured' => 'Tidak ada campaign penyelesaian yang dikonfigurasi. Silakan konfigurasi di Pengaturan Kartu Keluarga.',
         'campaign_not_found' => 'Campaign tidak ditemukan',
         'modal_heading' => 'Tandai Selesai',
-        'modal_description' => 'Tandai permohonan ini sebagai selesai dan beritahu pemohon melalui WhatsApp',
+        'modal_description' => 'Tandai permohonan ini sebagai selesai dan beritahu pemohon melalui WhatsApp dengan dokumen selesai',
         'modal_submit' => 'Selesai & Kirim Notifikasi',
     ],
 
@@ -217,11 +220,13 @@ return [
         'rejection_status_updated' => 'Status permohonan diperbarui menjadi ditolak, tetapi notifikasi tidak terkirim.',
         'completed_and_notified' => 'Permohonan Selesai & Notifikasi Terkirim',
         'completion_sent' => 'Notifikasi penyelesaian terkirim untuk registrasi :registration',
+        'completion_sent_with_file' => 'Notifikasi penyelesaian dengan dokumen terkirim untuk registrasi :registration',
         'completed_notification_failed' => 'Permohonan Selesai',
         'completion_status_updated' => 'Status permohonan diperbarui menjadi selesai, tetapi notifikasi tidak terkirim.',
         'message_sent' => 'Pesan Berhasil Dikirim',
         'failed_to_send' => 'Gagal Mengirim Pesan',
         'campaign_not_found' => 'Campaign tidak ditemukan',
+        'file_not_found' => 'File Tidak Ditemukan',
     ],
 
     // Modal Confirmations

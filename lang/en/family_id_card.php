@@ -127,6 +127,7 @@ return [
         'mark_on_progress' => 'Mark as On Progress',
         'create' => 'Create',
         'send_whatsapp' => 'Send WhatsApp',
+        'download_file' => 'Download Completion Document',
     ],
 
     // Create WhatsApp Notification
@@ -171,12 +172,14 @@ return [
         'applicant_details' => 'Name: :name | Phone: :phone',
         'select_campaign' => 'Select Completion Campaign',
         'campaign_placeholder' => 'Choose a completion notification template',
+        'file_upload' => 'Upload Completion Document (PDF) - Optional',
+        'file_upload_helper' => 'Optionally upload the completed Family ID Card document (PDF only, max 10MB). If uploaded, the file will be sent to the applicant via WhatsApp along with the message.',
         'message_preview' => 'Message Preview',
         'no_preview' => 'Select a campaign to see the message preview',
         'no_campaign_configured' => 'No completion campaign configured. Please configure one in Family ID Card Settings.',
         'campaign_not_found' => 'Campaign not found',
         'modal_heading' => 'Mark as Completed',
-        'modal_description' => 'Mark this application as completed and notify the applicant via WhatsApp',
+        'modal_description' => 'Mark this application as completed and notify the applicant via WhatsApp with the completion document',
         'modal_submit' => 'Complete & Send Notification',
     ],
 
@@ -217,11 +220,13 @@ return [
         'rejection_status_updated' => 'Application status updated to rejected, but notification was not sent.',
         'completed_and_notified' => 'Application Completed & Notification Sent',
         'completion_sent' => 'Completion notification sent for registration :registration',
+        'completion_sent_with_file' => 'Completion notification with document sent for registration :registration',
         'completed_notification_failed' => 'Application Completed',
         'completion_status_updated' => 'Application status updated to completed, but notification was not sent.',
         'message_sent' => 'Message Sent Successfully',
         'failed_to_send' => 'Failed to Send Message',
         'campaign_not_found' => 'Campaign not found',
+        'file_not_found' => 'File Not Found',
     ],
 
     // Modal Confirmations

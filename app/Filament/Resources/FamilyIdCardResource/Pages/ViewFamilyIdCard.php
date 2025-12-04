@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\FamilyIdCardResource\Pages;
 
+use App\Enums\CertificateStatus;
 use App\Filament\Resources\FamilyIdCardResource;
 use App\Models\FamilyIdCard;
 use App\Models\WhatsAppCampaign;
@@ -9,6 +10,7 @@ use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Support\Facades\Storage;
 
 class ViewFamilyIdCard extends ViewRecord
 {
@@ -156,6 +158,29 @@ class ViewFamilyIdCard extends ViewRecord
                 ->disabled(fn (FamilyIdCard $record): bool => empty($record->phone_number))
                 ->tooltip(fn (FamilyIdCard $record): ?string =>
                     empty($record->phone_number) ? __('family_id_card.whatsapp.phone_not_set') : null
+                ),
+
+            Actions\Action::make('download_file')
+                ->label(__('family_id_card.actions.download_file'))
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('success')
+                ->action(function (FamilyIdCard $record) {
+                    if (!$record->completion_file || !Storage::disk('public')->exists($record->completion_file)) {
+                        Notification::make()
+                            ->danger()
+                            ->title(__('family_id_card.notifications.file_not_found'))
+                            ->send();
+                        return;
+                    }
+
+                    return Storage::disk('public')->download(
+                        $record->completion_file,
+                        basename($record->completion_file)
+                    );
+                })
+                ->visible(fn (FamilyIdCard $record): bool =>
+                    $record->status === CertificateStatus::COMPLETED &&
+                    !empty($record->completion_file)
                 ),
 
             Actions\EditAction::make()

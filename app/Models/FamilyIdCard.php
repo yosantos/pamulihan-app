@@ -25,6 +25,7 @@ class FamilyIdCard extends Model
         'status',
         'admin_memo',
         'rejection_reason',
+        'completion_file',
         'person_in_charge_id',
         'created_by',
         'updated_by',

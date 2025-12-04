@@ -615,6 +615,15 @@ class FamilyIdCardResource extends Resource
                                 )
                                 ->columnSpanFull(),
 
+                            Forms\Components\FileUpload::make('completion_file')
+                                ->label(__('family_id_card.complete.file_upload'))
+                                ->acceptedFileTypes(['application/pdf'])
+                                ->maxSize(10240) // 10MB
+                                ->directory('family-id-cards/completion-files')
+                                ->preserveFilenames()
+                                ->helperText(__('family_id_card.complete.file_upload_helper'))
+                                ->columnSpanFull(),
+
                             Forms\Components\Placeholder::make('message_preview')
                                 ->label(__('family_id_card.complete.message_preview'))
                                 ->content(function (FamilyIdCard $record) {
@@ -659,12 +668,13 @@ class FamilyIdCardResource extends Resource
                                 ->columnSpanFull(),
                         ])
                         ->action(function (array $data, FamilyIdCard $record) {
-                            // Update status to completed
+                            // Update status and save file if provided
                             $record->update([
                                 'status' => CertificateStatus::COMPLETED,
+                                'completion_file' => $data['completion_file'] ?? null,
                             ]);
 
-                            // Get settings and send WhatsApp notification
+                            // Get settings
                             $settings = \App\Models\FamilyIdCardSettings::get();
                             $campaign = $settings->completion_campaign_id ? WhatsAppCampaign::find($settings->completion_campaign_id) : null;
 
@@ -687,25 +697,47 @@ class FamilyIdCardResource extends Resource
                                     }
                                 }
 
-                                $result = \App\Facades\Campaign::send(
-                                    $campaign->name,
-                                    $record->phone_number,
-                                    $variables
-                                );
+                                // Check if file was uploaded
+                                $hasFile = !empty($data['completion_file']);
+                                $filePath = $hasFile ? storage_path('app/public/' . $data['completion_file']) : null;
+
+                                // Send with file if available, otherwise send text only
+                                if ($hasFile && file_exists($filePath)) {
+                                    $campaignService = app(\App\Services\CampaignMessageService::class);
+                                    $result = $campaignService->sendCampaignWithFile(
+                                        $campaign->name,
+                                        $record->phone_number,
+                                        $filePath,
+                                        $variables
+                                    );
+
+                                    $notificationBody = $result['success']
+                                        ? __('family_id_card.notifications.completion_sent_with_file', ['registration' => $record->no_registration])
+                                        : __('family_id_card.notifications.completion_status_updated');
+                                } else {
+                                    // Send text only
+                                    $result = \App\Facades\Campaign::send(
+                                        $campaign->name,
+                                        $record->phone_number,
+                                        $variables
+                                    );
+
+                                    $notificationBody = $result['success']
+                                        ? __('family_id_card.notifications.completion_sent', ['registration' => $record->no_registration])
+                                        : __('family_id_card.notifications.completion_status_updated');
+                                }
 
                                 if ($result['success']) {
                                     Notification::make()
                                         ->success()
                                         ->title(__('family_id_card.notifications.completed_and_notified'))
-                                        ->body(__('family_id_card.notifications.completion_sent', [
-                                            'registration' => $record->no_registration
-                                        ]))
+                                        ->body($notificationBody)
                                         ->send();
                                 } else {
                                     Notification::make()
                                         ->warning()
                                         ->title(__('family_id_card.notifications.completed_notification_failed'))
-                                        ->body(__('family_id_card.notifications.completion_status_updated'))
+                                        ->body($notificationBody)
                                         ->send();
                                 }
                             } else {
